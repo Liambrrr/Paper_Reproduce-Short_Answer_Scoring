@@ -23,13 +23,23 @@ python step6_evaluation.py
 python step7_subject_report.py
 ```
 ## Step Instruction
-Step 1 - Sample the data
+Step 1-3 - Sample the data
+
+Download the data from https://www.kaggle.com/competitions/asap-sas/overview . We’ll use “train.tsv” file.
+Run git clone https://github.com/lan-j/SAS_GPT4 . That includes the prompts that we’ll use (SAS_GPT4/prompt/base(score_rationale_onequery path). Each txt file includes the prompt for the relevant question.
 For each question, randomly sample 100 responses, then add more until every label frequency  ≥ 10. This will be 1538 responses in total, across Q1-Q10. In paper, the numbers are: Q4=163, Q5=356, Q6=319, and 100 responses for each remaining question. They didn’t specifically mention about random sampling part. So, we can follow those question numbers, by double-checking label frequency.
 
+Step 4 - About the data
+
+The “EssaySet” column refers to the question number, such as Q1 or Q2. 
+In the dataset description, they mentioned “The first score is the final score and the one that you are trying to predict. The second score was used to determine reliability of the first score. The second score did not in any way influence the first (final) score.” So, we can use “Score1” column for the prediction while calculating Accuracy and QWK (quadratic weighted kappa).
+
+Step 5 - Run the experiment
+
+In the repository, there is a file named “GPT_inference.ipynb”. By changing OpenAI api key to Llama api key to use the Llama-3.1-405 Instructed model (which is supported by AWS), we can use the rest of the code as is. Just change “exp_name” to base(score_rationale_onequery). Then, start from Q1 to Q10 by changing “question” variable. All of them is in the third cell of the ipynb file.
 
 Step 6 - Evaluation
 For each question, calculate accuracy and QWK separately. Then, calculate average of the ten questions and report it.
-
 
 Step 7 - Report average results per subject
 For each subject (Science, English, Biology), calculate average results by reporting accuracy and QWK. Exclude Q10 because the grade level is different from others (aligning with the paper). Use Q1 and Q2 for “Science”, Q3, Q4, Q7, Q8, Q9 for “English”, Q5 and Q6 for “Biology”.
