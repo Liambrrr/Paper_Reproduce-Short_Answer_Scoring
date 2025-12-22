@@ -2,7 +2,10 @@
 
 ## Overview
 GPT_inference.ipynb was adapted from [lan-j/SAS_GPT4](https://github.com/lan-j/SAS_GPT4).
-Instead using GPT-4, this project was running with model Llama 3.1 405b instruct.
+
+This repository reproduces a prompt-based short-answer scoring experiment using LLMs, following the methodology of the referenced paper. We sample student responses from the ASAP-SAS dataset, apply a fixed grading prompt to each response using Llama-3.1-405B Instruct on AWS Bedrock, and evaluate the model’s performance against human scores. The pipeline is organized into clear steps: data sampling (ensuring sufficient label coverage), model inference with predefined prompts, numeric score extraction, and evaluation using Accuracy and Quadratic Weighted Kappa (QWK). Results are reported per question, averaged across all questions, and further aggregated by subject (Science, English, Biology), excluding Q10 to match the paper’s grade-level alignment. 
+
+We can understand the main findings by inspecting the final evaluation summaries, which show how closely the model’s scores agree with human graders under a simple prompt-based setup.
 
 ## Quick Start
 
@@ -22,43 +25,22 @@ python step1_sample_data.py
 python step6_evaluation.py
 python step7_subject_report.py
 ```
-## Step Instruction
-Step 1-3 - Sample the data
-
-Download the data from https://www.kaggle.com/competitions/asap-sas/overview . We’ll use “train.tsv” file.
-Run git clone https://github.com/lan-j/SAS_GPT4 . That includes the prompts that we’ll use (SAS_GPT4/prompt/base(score_rationale_onequery path). Each txt file includes the prompt for the relevant question.
-For each question, randomly sample 100 responses, then add more until every label frequency  ≥ 10. This will be 1538 responses in total, across Q1-Q10. In paper, the numbers are: Q4=163, Q5=356, Q6=319, and 100 responses for each remaining question. They didn’t specifically mention about random sampling part. So, we can follow those question numbers, by double-checking label frequency.
-
-Step 4 - About the data
-
-The “EssaySet” column refers to the question number, such as Q1 or Q2. 
-In the dataset description, they mentioned “The first score is the final score and the one that you are trying to predict. The second score was used to determine reliability of the first score. The second score did not in any way influence the first (final) score.” So, we can use “Score1” column for the prediction while calculating Accuracy and QWK (quadratic weighted kappa).
-
-Step 5 - Run the experiment
-
-In the repository, there is a file named “GPT_inference.ipynb”. By changing OpenAI api key to Llama api key to use the Llama-3.1-405 Instructed model (which is supported by AWS), we can use the rest of the code as is. Just change “exp_name” to base(score_rationale_onequery). Then, start from Q1 to Q10 by changing “question” variable. All of them is in the third cell of the ipynb file.
-
-Step 6 - Evaluation
-For each question, calculate accuracy and QWK separately. Then, calculate average of the ten questions and report it.
-
-Step 7 - Report average results per subject
-For each subject (Science, English, Biology), calculate average results by reporting accuracy and QWK. Exclude Q10 because the grade level is different from others (aligning with the paper). Use Q1 and Q2 for “Science”, Q3, Q4, Q7, Q8, Q9 for “English”, Q5 and Q6 for “Biology”.
 
 ## Experiment Results
 
 ### Accuracy and QWK per Question
-| Question | n_total | n_used | paper accuracy | llama 3.1 405b instruct accuracy | paper qwk | llama 3.1 405b instruct qwk |
-|----------|---------|--------|----------------|----------------------------------|-----------|-------------------------------|
-| Q1       | 100     | 92     | 0.51           | 0.26                             | 0.635     | 0.14                          |
-| Q2       | 100     | 97     | 0.53           | 0.31                             | 0.654     | 0.25                          |
-| Q3       | 100     | 80     | 0.69           | 0.48                             | 0.524     | 0.118                         |
-| Q4       | 100     | 84     | 0.706          | 0.46                             | 0.518     | 0.198                         |
-| Q5       | 117     | 110    | 0.756          | 0.35                             | 0.702     | 0.444                         |
-| Q6       | 112     | 108    | 0.781          | 0.46                             | 0.737     | 0.42                          |
-| Q7       | 100     | 86     | 0.47           | 0.37                             | 0.43      | 0.209                         |
-| Q8       | 100     | 91     | 0.47           | 0.33                             | 0.49      | 0.18                          |
-| Q9       | 100     | 89     | 0.64           | 0.57                             | 0.666     | 0.472                         |
-| Q10      | 100     | 92     | 0.73           | 0.46                             | 0.753     | 0.206                         |
+| Question | n_total | n_used | paper accuracy | llama 3.1 405b instruct accuracy | Δ accuracy | paper qwk | llama 3.1 405b instruct qwk | Δ qwk |
+|----------|---------|--------|----------------|----------------------------------|------------|-----------|-------------------------------|-------|
+| Q1 | 100 | 92 | 0.51 | 0.26 | -0.25 | 0.635 | 0.14 | -0.495 |
+| Q2 | 100 | 97 | 0.53 | 0.31 | -0.22 | 0.654 | 0.25 | -0.404 |
+| Q3 | 100 | 80 | 0.69 | 0.48 | -0.21 | 0.524 | 0.118 | -0.406 |
+| Q4 | 100 | 84 | 0.706 | 0.46 | -0.246 | 0.518 | 0.198 | -0.320 |
+| Q5 | 117 | 110 | 0.756 | 0.35 | -0.406 | 0.702 | 0.444 | -0.258 |
+| Q6 | 112 | 108 | 0.781 | 0.46 | -0.321 | 0.737 | 0.42 | -0.317 |
+| Q7 | 100 | 86 | 0.47 | 0.37 | -0.10 | 0.43 | 0.209 | -0.221 |
+| Q8 | 100 | 91 | 0.47 | 0.33 | -0.14 | 0.49 | 0.18 | -0.310 |
+| Q9 | 100 | 89 | 0.64 | 0.57 | -0.07 | 0.666 | 0.472 | -0.194 |
+| Q10 | 100 | 92 | 0.73 | 0.46 | -0.27 | 0.753 | 0.206 | -0.547 |
 
 ### Average Accuracy and QWK
 | paper_avg_accuracy | replication_avg_accuracy | paper_avg_qwk | replication_avg_qwk |
