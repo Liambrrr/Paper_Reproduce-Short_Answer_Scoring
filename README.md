@@ -27,6 +27,8 @@ python step7_subject_report.py
 ```
 
 ## Experiment Results
+Δ columns are computed as:  
+**Δ = mean (ours) − paper**
 
 ### Accuracy and QWK per Question
 | Question | n_total | n_used | paper accuracy | llama 3.1 405b instruct accuracy | Δ accuracy | paper qwk | llama 3.1 405b instruct qwk | Δ qwk |
@@ -43,9 +45,9 @@ python step7_subject_report.py
 | Q10 | 100 | 92 | 0.73 | 0.46 | -0.27 | 0.753 | 0.206 | -0.547 |
 
 ### Average Accuracy and QWK
-| paper_avg_accuracy | replication_avg_accuracy | paper_avg_qwk | replication_avg_qwk |
-|--------------------|---------------------------|---------------|-----------------------|
-| 0.63               | 0.41                      | 0.611         | 0.264                 |
+| paper_avg_accuracy | replication_avg_accuracy |Δ accuracy| paper_avg_qwk | replication_avg_qwk |Δ qwk|
+|--------------------|---------------------------|----------|---------------|-----------------------|----------|
+| 0.63               | 0.41                      |-0.21| 0.611         | 0.264                 |-0.347|
 
 ### Accuracy and QWK per Subject
 | Subject | Questions                  | Avg Accuracy | Avg QWK |
